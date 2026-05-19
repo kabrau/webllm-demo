@@ -1,0 +1,420 @@
+{
+  "source": "https://marcelocabral.com.br/links",
+  "updated": "2026-05",
+  "links": [
+    {
+      "id": "hetzner",
+      "title": "Hetzner",
+      "category": "Deploy & Hosting",
+      "description": "Serviços de hospedagem cloud, VPS, dedicados e infraestrutura de servidores com preços competitivos e datacenters na Europa.",
+      "tags": ["hetzner", "cloud", "vps", "dedicados", "servidores", "hospedagem", "alemanha", "preco-competitivo", "europeu"],
+      "url": "https://www.hetzner.com/",
+      "featured": true
+    },
+    {
+      "id": "hermes",
+      "title": "Hermes",
+      "category": "Agent Codes",
+      "description": "Agent de IA open-source da Nous Research. Framework modular para agentes autônomos com múltiplos LLMs, ferramentas, memória e planejamento.",
+      "tags": ["agent", "open-source", "framework", "llm", "autonomous", "modular", "nous-research"],
+      "url": "https://github.com/nousresearch/hermes-agent",
+      "featured": true
+    },
+    {
+      "id": "grafana",
+      "title": "Grafana",
+      "category": "Observabilidade & Monitoramento",
+      "description": "Plataforma open-source para visualização e monitoramento de métricas, logs e traces. Suporta Prometheus, InfluxDB, Elasticsearch e dashboards.",
+      "tags": ["grafana", "visualizacao", "monitoramento", "dashboards", "metricas", "logs", "traces", "open-source", "prometheus"],
+      "url": "https://github.com/grafana/grafana",
+      "featured": true
+    },
+    {
+      "id": "uptime-kuma",
+      "title": "Uptime Kuma",
+      "category": "Observabilidade & Monitoramento",
+      "description": "Monitoramento de sites e serviços com interface moderna, notificações e auto-healing. Alternativa self-hosted ao UptimeRobot.",
+      "tags": ["uptime-kuma", "monitoramento", "observabilidade", "self-hosted", "open-source", "notificacoes", "healing"],
+      "url": "https://github.com/louislam/uptime-kuma",
+      "featured": true
+    },
+    {
+      "id": "contabo",
+      "title": "Contabo",
+      "category": "Deploy & Hosting",
+      "description": "Cloud hosting, VPS, servidores dedicados e armazenamento com datacenters na Europa e preços acessíveis.",
+      "tags": ["contabo", "cloud", "vps", "dedicados", "armazenamento", "hospedagem", "alemanha", "preco-acessivel", "europeu"],
+      "url": "https://contabo.com/",
+      "featured": true
+    },
+    {
+      "id": "apify",
+      "title": "Apify",
+      "category": "Crawlers & Scrapers",
+      "description": "Milhares de Actors prontos para scraping (Google Maps, TikTok, Instagram, LinkedIn) com API, agendamento e integrações para agentes de IA.",
+      "tags": ["scraping", "crawler", "actors", "api", "free-tier"],
+      "url": "https://apify.com/",
+      "featured": true
+    },
+    {
+      "id": "firecrawl",
+      "title": "Firecrawl",
+      "category": "Crawlers & Scrapers",
+      "description": "API para scraping, crawling, busca e mapeamento de sites, retornando conteúdo em markdown pronto para LLMs.",
+      "tags": ["scraping", "crawler", "markdown", "llm-ready", "free-tier"],
+      "url": "https://www.firecrawl.dev/",
+      "featured": true
+    },
+    {
+      "id": "lm-studio",
+      "title": "LM Studio",
+      "category": "LLMs Locais",
+      "description": "App desktop para rodar LLMs localmente com interface gráfica e API. Suporta gpt-oss, Qwen3, Gemma3, DeepSeek e centenas de modelos. Modo headless (llmster) para servidores.",
+      "tags": ["local", "llm", "desktop", "gui", "api", "free"],
+      "url": "https://lmstudio.ai/",
+      "featured": true
+    },
+    {
+      "id": "ollama",
+      "title": "Ollama",
+      "category": "LLMs Locais",
+      "description": "Roda LLMs open source localmente via CLI (Llama, Mistral, Gemma, Phi, Qwen, DeepSeek). Sem API keys, privacidade total. REST API para Python, Node, Open WebUI.",
+      "tags": ["local", "llm", "cli", "privacy", "api", "free"],
+      "url": "https://ollama.com/",
+      "featured": true
+    },
+    {
+      "id": "cerebras",
+      "title": "Cerebras Inference",
+      "category": "LLM APIs",
+      "description": "Inferência muito rápida em wafer-scale chips. Tier gratuito com modelos Cerebras-powered.",
+      "tags": ["llm", "fast", "inference", "llama", "free-tier"],
+      "url": "https://www.cerebras.ai/",
+      "featured": true
+    },
+    {
+      "id": "groq",
+      "title": "Groq",
+      "category": "LLM APIs",
+      "description": "Inferência ultra-rápida em LPU. Tier gratuito com Llama, Mixtral, Whisper e outros modelos open.",
+      "tags": ["llm", "inference", "fast", "free-tier", "whisper"],
+      "url": "https://groq.com/",
+      "featured": true
+    },
+    {
+      "id": "huggingface",
+      "title": "Hugging Face",
+      "category": "LLM APIs",
+      "description": "Hub da comunidade open source de IA. Inference Providers serverless a centenas de modelos. Tier gratuito.",
+      "tags": ["llm", "hub", "open-source", "community", "free-tier"],
+      "url": "https://huggingface.co/",
+      "featured": true
+    },
+    {
+      "id": "github-models",
+      "title": "GitHub Models",
+      "category": "LLM APIs",
+      "description": "Catálogo de modelos hospedados pela GitHub (Llama, Phi, Mistral, OpenAI, etc.) gratuitos para prototipagem, sem cartão.",
+      "tags": ["llm", "github", "playground", "prototyping", "free-tier"],
+      "url": "https://github.com/marketplace/models",
+      "featured": true
+    },
+    {
+      "id": "openrouter",
+      "title": "OpenRouter",
+      "category": "LLM APIs",
+      "description": "Interface unificada para 300+ LLMs com uma API key. Modelos gratuitos e roteamento inteligente entre providers.",
+      "tags": ["llm", "api", "gateway", "free-tier", "multi-model"],
+      "url": "https://openrouter.ai/",
+      "featured": true
+    },
+    {
+      "id": "openhands",
+      "title": "OpenHands",
+      "category": "Agent Codes",
+      "description": "Plataforma open source para agentes de codificação. Lê código, edita arquivos, abre PRs e resolve issues.",
+      "tags": ["agent", "open-source", "coding", "sdk", "free"],
+      "url": "https://openhands.dev/",
+      "featured": true
+    },
+    {
+      "id": "openclaw",
+      "title": "OpenClaw",
+      "category": "Assistentes Pessoais IA",
+      "description": "Assistente pessoal self-hosted. Roda nas suas máquinas, conversa via iMessage/Slack/WhatsApp/Discord, online 24/7. Skills extensíveis.",
+      "tags": ["personal", "self-hosted", "agent", "skills", "open-source"],
+      "url": "https://openclaw.ai/",
+      "featured": true
+    },
+    {
+      "id": "deepseek",
+      "title": "DeepSeek",
+      "category": "LLM APIs",
+      "description": "Modelos baratos e de alta qualidade (V3/R1). API compatível com OpenAI e Anthropic. Tier gratuito.",
+      "tags": ["llm", "api", "reasoning", "cheap", "free-tier"],
+      "url": "https://www.deepseek.com/",
+      "featured": true
+    },
+    {
+      "id": "claude-code",
+      "title": "Claude Code",
+      "category": "Agent Codes",
+      "description": "Agente de codificação da Anthropic no terminal, IDE, desktop e browser. Edita arquivos e executa comandos.",
+      "tags": ["agent", "cli", "anthropic", "claude", "terminal"],
+      "url": "https://claude.com/product/claude-code",
+      "featured": true
+    },
+    {
+      "id": "google-ai-studio",
+      "title": "Google AI Studio",
+      "category": "LLM APIs",
+      "description": "Plataforma Google para API Gemini (texto, visão, áudio, vídeo). Tier gratuito generoso com Gemini 2.5 Pro/Flash.",
+      "tags": ["llm", "gemini", "google", "multimodal", "free-tier"],
+      "url": "https://aistudio.google.com/",
+      "featured": true
+    },
+    {
+      "id": "huggingface-learn",
+      "title": "Hugging Face Learn",
+      "category": "Cursos",
+      "description": "Gratuito e open-source. Transformers, LLMs, agents, diffusion, áudio, visão, RL e datasets.",
+      "tags": ["huggingface", "transformers", "llms", "agents", "gratuito", "open-source", "FREE"],
+      "url": "https://huggingface.co/learn",
+      "featured": false
+    },
+    {
+      "id": "scrapling",
+      "title": "Scrapling",
+      "category": "Crawlers & Scrapers",
+      "description": "Framework adaptativo de web scraping em Python com seletores resilientes a mudanças no HTML.",
+      "tags": ["python", "scraping", "crawler", "open-source"],
+      "url": "https://github.com/D4Vinci/Scrapling",
+      "featured": false
+    },
+    {
+      "id": "google-skills",
+      "title": "Google Skills",
+      "category": "Agent Codes",
+      "description": "Repositório oficial do Google com skills modulares para agentes de IA.",
+      "tags": ["google", "skills", "agents", "ai"],
+      "url": "https://github.com/google/skills",
+      "featured": false
+    },
+    {
+      "id": "mimi-script",
+      "title": "Teste Script Mimi",
+      "category": "LLM APIs",
+      "description": "Teste da skill supabase-links via script.",
+      "tags": ["mimi", "script", "skill", "teste"],
+      "url": "https://mimi-script.ai/",
+      "featured": false
+    },
+    {
+      "id": "anthropic-academy",
+      "title": "Anthropic Academy",
+      "category": "Cursos",
+      "description": "Gratuito. Claude, prompts, API, MCP, agentes e uso responsável.",
+      "tags": ["anthropic", "claude", "api", "prompts", "mcp", "agentes", "gratuito", "FREE"],
+      "url": "https://anthropic.skilljar.com/",
+      "featured": false
+    },
+    {
+      "id": "grow-google",
+      "title": "Google AI / Grow with Google",
+      "category": "Cursos",
+      "description": "Freemium. IA para trabalho, Gemini, produtividade e certificados em português.",
+      "tags": ["google", "gemini", "ia-trabalho", "produtividade", "portugues", "FREEMIUM"],
+      "url": "https://grow.google/ai",
+      "featured": false
+    },
+    {
+      "id": "meta-ai-resources",
+      "title": "Meta AI Resources",
+      "category": "Cursos",
+      "description": "Gratuito. Llama, PyTorch, modelos, datasets, benchmarks e recursos técnicos (majoritariamente em inglês).",
+      "tags": ["meta", "llama", "pytorch", "datasets", "gratuito", "ingles", "FREE"],
+      "url": "https://ai.meta.com/resources",
+      "featured": false
+    },
+    {
+      "id": "nvidia-training",
+      "title": "NVIDIA Training / DLI",
+      "category": "Cursos",
+      "description": "Freemium. Deep learning, CUDA, GPU, visão computacional, robótica e IA generativa.",
+      "tags": ["nvidia", "deep-learning", "cuda", "gpu", "ia-generativa", "FREEMIUM"],
+      "url": "https://developer.nvidia.com/training",
+      "featured": false
+    },
+    {
+      "id": "microsoft-learn",
+      "title": "Microsoft Learn",
+      "category": "Cursos",
+      "description": "Gratuito + certificações pagas. Azure AI, Copilot, IA generativa em português.",
+      "tags": ["microsoft", "azure", "copilot", "ia-generativa", "gratuito", "portugues", "FREE"],
+      "url": "https://learn.microsoft.com/training",
+      "featured": false
+    },
+    {
+      "id": "openai-academy",
+      "title": "OpenAI Academy",
+      "category": "Cursos",
+      "description": "Gratuito. ChatGPT, agentes, prompts, fine-tuning, function calling e evals.",
+      "tags": ["openai", "chatgpt", "agentes", "prompts", "fine-tuning", "gratuito", "FREE"],
+      "url": "https://academy.openai.com/",
+      "featured": false
+    },
+    {
+      "id": "ibm-skillsbuild",
+      "title": "IBM SkillsBuild",
+      "category": "Cursos",
+      "description": "Gratuito em português. IA, IA generativa, ML, dados e cibersegurança.",
+      "tags": ["ibm", "ia-generativa", "ml", "dados", "gratuito", "portugues", "FREE"],
+      "url": "https://skillsbuild.org/",
+      "featured": false
+    },
+    {
+      "id": "aws-skillbuilder",
+      "title": "AWS Skill Builder",
+      "category": "Cursos",
+      "description": "Freemium. Bedrock, SageMaker, cloud, IA generativa e certificações AWS.",
+      "tags": ["aws", "bedrock", "sagemaker", "cloud", "ia-generativa", "FREEMIUM"],
+      "url": "https://skillbuilder.aws/",
+      "featured": false
+    },
+    {
+      "id": "deeplearning-ai",
+      "title": "DeepLearning.AI",
+      "category": "Cursos",
+      "description": "Freemium. Machine learning, deep learning, LLMs, RAG, agentes e short courses.",
+      "tags": ["deeplearning", "machine-learning", "llms", "rag", "agentes", "FREEMIUM"],
+      "url": "https://www.deeplearning.ai/",
+      "featured": false
+    },
+    {
+      "id": "edx-ibm",
+      "title": "edX / IBM",
+      "category": "Cursos",
+      "description": "Freemium. Cursos estruturados de IBM em IA, Python, ML e dados.",
+      "tags": ["edx", "ibm", "ia", "python", "ml", "FREEMIUM"],
+      "url": "https://www.edx.org/school/ibm",
+      "featured": false
+    },
+    {
+      "id": "apidog",
+      "title": "Apidog",
+      "category": "Ferramentas de API",
+      "description": "Design, debug, mock, teste e documentação de APIs. MCP client para agentes de IA.",
+      "tags": ["api", "testing", "documentation", "mcp", "free-tier"],
+      "url": "https://apidog.com/",
+      "featured": false
+    },
+    {
+      "id": "puter",
+      "title": "Puter.js",
+      "category": "LLM APIs",
+      "description": "SDK frontend com 400+ modelos sem API keys nem backend. Modelo user-pays.",
+      "tags": ["llm", "sdk", "frontend", "user-pays", "no-backend"],
+      "url": "https://developer.puter.com/",
+      "featured": false
+    },
+    {
+      "id": "nvidia-nim",
+      "title": "NVIDIA NIM",
+      "category": "LLM APIs",
+      "description": "Endpoints de inferência NVIDIA para Llama, Mistral, Nemotron. Gratuito para NVIDIA Developer Program.",
+      "tags": ["llm", "nvidia", "endpoints", "free-tier"],
+      "url": "https://build.nvidia.com/",
+      "featured": false
+    },
+    {
+      "id": "deepinfra",
+      "title": "DeepInfra",
+      "category": "LLM APIs",
+      "description": "Inferência com API OpenAI-compatible e centenas de modelos open source. Créditos iniciais no cadastro.",
+      "tags": ["llm", "openai-compatible", "open-source", "multimodal", "free-tier"],
+      "url": "https://deepinfra.com/",
+      "featured": false
+    },
+    {
+      "id": "together-ai",
+      "title": "Together AI",
+      "category": "LLM APIs",
+      "description": "Inferência serverless com 200+ modelos open source. Créditos gratuitos no signup.",
+      "tags": ["llm", "open-source", "inference", "fine-tuning", "free-tier"],
+      "url": "https://www.together.ai/",
+      "featured": false
+    },
+    {
+      "id": "railway",
+      "title": "Railway",
+      "category": "Deploy & Hosting",
+      "description": "PaaS para deploy de apps, Postgres, MongoDB, Redis, Docker. Deploy do GitHub com tier gratuito limitado.",
+      "tags": ["paas", "deploy", "hosting", "postgres", "docker", "free-tier"],
+      "url": "https://railway.app/",
+      "featured": false
+    },
+    {
+      "id": "sambanova",
+      "title": "SambaNova Cloud",
+      "category": "LLM APIs",
+      "description": "Inferência ultrarrápida com Llama 3.1 405B. Tier gratuito para desenvolvedores.",
+      "tags": ["llm", "llama", "inference", "fast", "free-tier"],
+      "url": "https://cloud.sambanova.ai/",
+      "featured": false
+    },
+    {
+      "id": "openai-api",
+      "title": "OpenAI API",
+      "category": "LLM APIs",
+      "description": "API oficial OpenAI para GPT, embeddings, Whisper, DALL·E, Sora e agentes. Pago por uso.",
+      "tags": ["llm", "api", "gpt", "whisper", "official"],
+      "url": "https://openai.com/api/",
+      "featured": false
+    },
+    {
+      "id": "github-copilot",
+      "title": "GitHub Copilot",
+      "category": "Agent Codes",
+      "description": "Assistente de código GitHub/Microsoft em IDEs. Múltiplos modelos e modo agente. Tier gratuito.",
+      "tags": ["copilot", "ide", "vscode", "agent", "free-tier"],
+      "url": "https://github.com/features/copilot",
+      "featured": false
+    },
+    {
+      "id": "cloudflare-workers-ai",
+      "title": "Cloudflare Workers AI",
+      "category": "LLM APIs",
+      "description": "Modelos de IA serverless na rede Cloudflare. Incluso no plano Free dos Workers. Edge inference.",
+      "tags": ["llm", "edge", "serverless", "cloudflare", "free-tier"],
+      "url": "https://developers.cloudflare.com/workers-ai/",
+      "featured": false
+    },
+    {
+      "id": "z-ai",
+      "title": "Z.AI (Zhipu)",
+      "category": "LLM APIs",
+      "description": "Família GLM (GLM-5.1, GLM-5V multimodal). Forte em código. Créditos gratuitos iniciais.",
+      "tags": ["llm", "glm", "zhipu", "coding", "free-tier"],
+      "url": "https://z.ai/",
+      "featured": false
+    },
+    {
+      "id": "opencode",
+      "title": "OpenCode",
+      "category": "Agent Codes",
+      "description": "Agent de IA para terminal, open source. Alternativa livre ao Claude Code / Cursor.",
+      "tags": ["agent", "cli", "open-source", "coding", "free"],
+      "url": "https://opencode.ai/",
+      "featured": false
+    },
+    {
+      "id": "openai-codex",
+      "title": "OpenAI Codex",
+      "category": "Agent Codes",
+      "description": "Agente de engenharia de software da OpenAI. Tarefas em paralelo no repositório, PRs, CLI ou nuvem.",
+      "tags": ["agent", "coding", "openai", "cli"],
+      "url": "https://openai.com/codex/",
+      "featured": false
+    }
+  ]
+}

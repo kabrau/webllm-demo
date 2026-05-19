@@ -1,0 +1,12 @@
+{
+  "name": "llm-navegador",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo didática WebLLM + RAG sobre Links Úteis",
+  "scripts": {
+    "start": "npx serve . -p 8080",
+    "test:rag": "node -e \"import('./retrieve.js').then(m=>import('fs').then(fs=>{const kb=JSON.parse(fs.readFileSync('data/links-kb.json','utf8'));const r=m.retrieveLinks('scraping gratuito',kb.links);console.log(r.results.map(x=>x.link.title));}))\"",
+    "test:smoke": "node scripts/smoke-test.mjs"
+  }
+}

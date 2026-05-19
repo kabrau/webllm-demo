@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebLLM Demo — Links Úteis</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%230ea5e9' width='32' height='32' rx='6'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif'%3EW%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-row">
+        <div class="brand">
+          <h1>WebLLM Demo</h1>
+          <p class="subtitle">Inferência no navegador · <a href="https://marcelocabral.com.br/links" target="_blank" rel="noopener">Links Úteis</a></p>
+        </div>
+        <div class="header-meta">
+          <span class="badge" id="model-badge">Modelo: —</span>
+          <span class="status-pill" id="status-pill" data-state="idle">Aguardando</span>
+          <label class="toggle-inspector">
+            <input type="checkbox" id="toggle-inspector" checked />
+            Inspetor
+          </label>
+        </div>
+      </div>
+      <div class="metrics-strip" id="metrics-bar" aria-label="Métricas em tempo real">
+        <div class="metric-item">
+          <span class="metric-kicker">RAM</span>
+          <strong class="metric-num" id="metric-ram">—</strong>
+          <span class="metric-desc" id="metric-ram-hint">aguardando</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-kicker">VRAM / GPU</span>
+          <strong class="metric-num" id="metric-vram">—</strong>
+          <span class="metric-desc" id="metric-vram-hint">WebGPU</span>
+        </div>
+        <div class="metric-item metric-item-tps">
+          <span class="metric-kicker">Tokens / s</span>
+          <strong class="metric-num" id="metric-tps">—</strong>
+          <span class="metric-desc" id="metric-tps-hint">durante a geração</span>
+        </div>
+      </div>
+    </header>
+
+    <div id="loading-overlay" class="loading-overlay" hidden>
+      <div class="loading-card">
+        <h2>Carregando modelo WebLLM</h2>
+        <p class="loading-model" id="loading-model-name"></p>
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+        </div>
+        <p class="progress-text" id="progress-text">0%</p>
+        <p class="loading-hint">
+          O modelo roda no seu navegador via <strong>WebGPU</strong>. Na primeira visita o download pode levar alguns minutos; depois fica em cache.
+        </p>
+        <p class="webgpu-status" id="webgpu-status"></p>
+        <pre class="loading-log" id="loading-log" aria-live="polite"></pre>
+      </div>
+    </div>
+
+    <main class="layout" id="main-layout">
+      <aside class="panel panel-lesson" aria-label="Como funciona">
+        <h2>Como funciona</h2>
+        <article class="lesson-block">
+          <h3>1. WebLLM</h3>
+          <p>
+            <a href="https://github.com/mlc-ai/web-llm" target="_blank" rel="noopener">WebLLM</a>
+            executa um LLM inteiro no browser com WebAssembly + <strong>WebGPU</strong> — sem API key e sem servidor de inferência.
+          </p>
+        </article>
+        <article class="lesson-block">
+          <h3>2. Web Worker</h3>
+          <p>Download e geração rodam em um <code>Worker</code> separado para a interface não travar.</p>
+        </article>
+        <article class="lesson-block">
+          <h3>3. RAG simples</h3>
+          <p>Sua pergunta busca links em <code>links-kb.json</code>. Os trechos relevantes entram no <em>system prompt</em> — não é fine-tuning.</p>
+        </article>
+        <article class="lesson-block">
+          <h3>4. Métricas</h3>
+          <p>Faixa no topo: RAM, GPU e velocidade de geração (tokens/s).</p>
+        </article>
+      </aside>
+
+      <section class="panel panel-chat" aria-label="Chat">
+        <h2 class="panel-title">Chat</h2>
+        <div class="messages" id="messages" role="log" aria-live="polite"></div>
+        <div class="chat-footer">
+          <div class="suggestions" id="suggestions">
+            <span class="suggestions-label">Experimente:</span>
+            <button type="button" class="chip" data-prompt="Quais ferramentas de LLM local existem na lista?">LLM local</button>
+            <button type="button" class="chip" data-prompt="Me indique APIs de LLM com tier gratuito.">APIs gratuitas</button>
+            <button type="button" class="chip" data-prompt="O que tem para scraping e crawlers?">Scraping</button>
+            <button type="button" class="chip" data-prompt="Quais cursos de IA estão na curadoria?">Cursos</button>
+          </div>
+          <form class="chat-form" id="chat-form">
+            <input
+              type="text"
+              id="user-input"
+              placeholder="Pergunte sobre os links da curadoria…"
+              autocomplete="off"
+              disabled
+            />
+            <button type="submit" id="send-btn" disabled>Enviar</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel panel-inspector" id="inspector-panel" aria-label="Inspetor">
+        <h2>Inspetor</h2>
+        <div class="turn-select-row">
+          <label for="turn-select">Turno:</label>
+          <select id="turn-select" disabled>
+            <option value="">—</option>
+          </select>
+        </div>
+        <div class="inspector-tabs" role="tablist">
+          <button type="button" class="tab active" data-tab="rag">RAG</button>
+          <button type="button" class="tab" data-tab="system">System</button>
+          <button type="button" class="tab" data-tab="messages">Messages</button>
+          <button type="button" class="tab" data-tab="response">Resposta</button>
+          <button type="button" class="tab" data-tab="meta">Meta</button>
+        </div>
+        <div class="inspector-toolbar">
+          <button type="button" class="btn-copy" id="btn-copy" disabled>Copiar aba</button>
+        </div>
+        <pre class="inspector-content" id="inspector-content">Envie uma pergunta para inspecionar o prompt.</pre>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Demo educativa · <a href="https://github.com/mlc-ai/web-llm">mlc-ai/web-llm</a> · Dados: marcelocabral.com.br/links</p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
