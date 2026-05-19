@@ -18,13 +18,21 @@
           <p class="subtitle">Inferência no navegador · <a href="https://marcelocabral.com.br/links" target="_blank" rel="noopener">Links Úteis</a></p>
         </div>
         <div class="header-meta">
-          <span class="badge" id="model-badge">Modelo: —</span>
           <span class="status-pill" id="status-pill" data-state="idle">Aguardando</span>
           <label class="toggle-inspector">
             <input type="checkbox" id="toggle-inspector" checked />
             Inspetor
           </label>
         </div>
+      </div>
+      <div class="model-picker" id="model-picker">
+        <label class="model-picker-label" for="model-select">Modelo WebLLM</label>
+        <select id="model-select" class="model-select" aria-describedby="model-desc"></select>
+        <p class="model-desc" id="model-desc">Selecione um modelo para ver a descrição.</p>
+        <label class="model-filter-f16">
+          <input type="checkbox" id="filter-q4f32-only" checked />
+          Mostrar só q4f32 (recomendado no Windows)
+        </label>
       </div>
       <div class="metrics-strip" id="metrics-bar" aria-label="Métricas em tempo real">
         <div class="metric-item">
@@ -53,10 +61,19 @@
           <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
         </div>
         <p class="progress-text" id="progress-text">0%</p>
+        <p class="loading-wait" id="loading-wait" role="status">
+          Aguarde — não feche a aba. Na 1ª vez o download dos pesos pode levar <strong>vários minutos</strong> (ex.: Gemma 2B ~1,5 GB em partes). A barra pode ficar em 0% por alguns segundos antes de atualizar.
+        </p>
         <p class="loading-hint">
-          O modelo roda no seu navegador via <strong>WebGPU</strong>. Na primeira visita o download pode levar alguns minutos; depois fica em cache.
+          O modelo roda no seu navegador via <strong>WebGPU</strong>. Depois do cache, trocar de modelo fica bem mais rápido.
         </p>
         <p class="webgpu-status" id="webgpu-status"></p>
+        <div id="gpu-recovery-panel" class="gpu-recovery-panel" hidden>
+          <p id="gpu-recovery-text" class="gpu-recovery-text"></p>
+          <button type="button" id="btn-reload-page" class="btn-reload-page">
+            Recarregar página
+          </button>
+        </div>
         <pre class="loading-log" id="loading-log" aria-live="polite"></pre>
       </div>
     </div>
@@ -86,7 +103,18 @@
       </aside>
 
       <section class="panel panel-chat" aria-label="Chat">
-        <h2 class="panel-title">Chat</h2>
+        <div class="chat-toolbar">
+          <h2 class="panel-title">Chat</h2>
+          <button
+            type="button"
+            id="btn-reset-context"
+            class="btn-reset-context"
+            title="Zera o histórico do chat e o estado interno do WebLLM"
+            disabled
+          >
+            Limpar contexto
+          </button>
+        </div>
         <div class="messages" id="messages" role="log" aria-live="polite"></div>
         <div class="chat-footer">
           <div class="suggestions" id="suggestions">
@@ -105,6 +133,9 @@
               disabled
             />
             <button type="submit" id="send-btn" disabled>Enviar</button>
+            <button type="button" id="btn-stop" class="btn-stop" hidden disabled>
+              Parar
+            </button>
           </form>
         </div>
       </section>

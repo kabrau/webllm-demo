@@ -94,19 +94,85 @@ export function formatVramDisplay(gpu) {
   return { value, sub: parts.join(" · ") };
 }
 
-/** @returns {{ value: string, sub: string }} */
-export function formatTpsDisplay({ instant, decode, prefill }) {
-  if (decode > 0) {
-    const sub = [];
-    if (instant > 0) sub.push(`pico ${instant.toFixed(1)}`);
-    if (prefill > 0) sub.push(`prefill ${prefill.toFixed(1)}`);
+/**
+ * Extrai contagem de tokens e tok/s do usage do WebLLM (com fallbacks).
+ * @param {object|null} usage
+ * @param {string} replyText
+ * @param {number} durationMs
+ */
+export function usageToTokenStats(usage, replyText, durationMs) {
+  const secs = Math.max(durationMs / 1000, 0.001);
+  const estimatedCompletion = estimateTokens(replyText);
+
+  if (!usage) {
     return {
-      value: decode.toFixed(1),
-      sub: sub.length ? sub.join(" · ") + " tok/s" : "decode (WebLLM)",
+      promptTokens: null,
+      completionTokens: estimatedCompletion,
+      totalTokens: estimatedCompletion,
+      decodeTps: estimatedCompletion / secs,
+      prefillTps: 0,
+      source: "estimate",
     };
   }
+
+  const extra = usage.extra || {};
+  const promptTokens = usage.prompt_tokens ?? null;
+  const completionTokens = usage.completion_tokens ?? estimatedCompletion;
+  const totalTokens =
+    usage.total_tokens ?? (promptTokens ?? 0) + completionTokens;
+
+  let decodeTps = extra.decode_tokens_per_s;
+  if (!decodeTps && completionTokens && extra.e2e_latency_s > 0) {
+    decodeTps = completionTokens / extra.e2e_latency_s;
+  }
+  if (!decodeTps && completionTokens) {
+    decodeTps = completionTokens / secs;
+  }
+
+  const prefillTps = extra.prefill_tokens_per_s || 0;
+
+  return {
+    promptTokens,
+    completionTokens,
+    totalTokens,
+    decodeTps: decodeTps || 0,
+    prefillTps,
+    source: usage.completion_tokens != null ? "webllm" : "estimate",
+  };
+}
+
+/** @returns {{ value: string, sub: string }} */
+export function formatTpsDisplay({ instant, decode, prefill, tokenStats }) {
+  const tokHint =
+    tokenStats?.completionTokens != null
+      ? `${tokenStats.completionTokens} tok saída` +
+        (tokenStats.promptTokens != null ? ` · ${tokenStats.promptTokens} prompt` : "")
+      : null;
+
+  if (decode > 0) {
+    const speedParts = [];
+    if (instant > 0) speedParts.push(`pico ${instant.toFixed(1)}`);
+    if (prefill > 0) speedParts.push(`prefill ${prefill.toFixed(1)}`);
+    let sub = tokHint || "";
+    if (speedParts.length) {
+      const speeds = `${speedParts.join(" · ")} tok/s`;
+      sub = sub ? `${sub} · ${speeds}` : speeds;
+    } else if (!sub) {
+      sub = "decode (WebLLM)";
+    }
+    return { value: decode.toFixed(1), sub };
+  }
   if (instant > 0) {
-    return { value: instant.toFixed(1), sub: "agora (estimativa)" };
+    return {
+      value: instant.toFixed(1),
+      sub: tokHint ? `${tokHint} · estimativa` : "agora (estimativa)",
+    };
+  }
+  if (tokenStats?.source === "kb-deterministic") {
+    return { value: "—", sub: "resposta da KB (sem inferência LLM)" };
+  }
+  if (tokHint) {
+    return { value: "—", sub: `${tokHint} · sem tok/s` };
   }
   return { value: "—", sub: "durante a geração" };
 }

@@ -43,12 +43,11 @@ Aguarde o overlay de carregamento terminar antes de usar o chat.
 
 ## Modelo
 
-Padrão: `Qwen2.5-0.5B-Instruct-q4f32_1-MLC` (leve; **q4f32** sem extensão `shader-f16`).
+Use o seletor **Modelo WebLLM** no topo da página — lista completa do [WebLLM prebuiltAppConfig](https://github.com/mlc-ai/web-llm/blob/main/src/config.ts), agrupada por família, com descrição abaixo do select.
 
-Alternativas no catálogo WebLLM: `Llama-3.2-1B-Instruct-q4f32_1-MLC`.  
-**Não use** `Qwen2-0.5B-Instruct-q4f32_1-MLC` — esse ID não existe (só q4f16 ou q0f32).
-
-Altere em `app.js` → constante `MODEL_ID`.
+- Padrão: `Qwen2.5-0.5B-Instruct-q4f32_1-MLC`
+- Checkbox **“Mostrar só q4f32”** (ligado por padrão): oculta modelos `q4f16` que falham no Windows sem shader-f16
+- Ao trocar o modelo, o chat é limpo e o novo peso é baixado (cache na 2ª vez)
 
 ### Erro `extension 'f16' is not allowed`
 
