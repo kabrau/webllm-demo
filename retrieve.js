@@ -182,7 +182,6 @@ function isListIntent(queryTokens) {
   return queryTokens.some((t) => LIST_VERBS.has(t));
 }
 
-/** "O que tem para X?", "quais opções de Y?" */
 /** "O que mais você sabe responder?", capacidades do assistente. */
 function isCatalogHelpIntent(query) {
   const norm = normalize(query).replace(/\s+/g, " ").trim();
@@ -219,8 +218,8 @@ function categoryMatchesTokens(category, tokens) {
   return tokens.every((t) => catNorm.includes(t));
 }
 
-/** Saudação ou ack — resposta fixa, sem LLM nem RAG enganoso. */
-export function isGreetingQuery(query) {
+/** Saudação curta — sem RAG de links; o LLM responde com prompt de boas-vindas. */
+function isGreetingQuery(query) {
   const norm = normalize(query).replace(/\s+/g, " ").trim();
   if (!norm) return true;
   if (GREETING_PHRASES.has(norm)) return true;
@@ -379,6 +378,14 @@ export function buildRetrievalQuery(query, priorMessages = []) {
 export function retrieveLinks(query, links, limit = 8) {
   const queryTokens = tokenize(query);
 
+  if (isUtilityTextTask(query)) {
+    return {
+      results: [],
+      queryTokens,
+      retrievalMode: "utility-text",
+    };
+  }
+
   if (isGreetingQuery(query)) {
     const categories = [...new Set(links.map((l) => l.category))].sort((a, b) =>
       a.localeCompare(b, "pt")
@@ -465,19 +472,79 @@ Tags: ${tags}`;
     .join("\n\n");
 }
 
-const SYSTEM_RULES = `Você é o assistente dos Links Úteis de Marcelo Cabral (marcelocabral.com.br/links).
-Responda em português do Brasil.
+const LINKS_RULES = `Você também ajuda com a curadoria de Links Úteis (marcelocabral.com.br/links).
 
-REGRAS OBRIGATÓRIAS:
-- Os links já estão na seção LINKS RECUPERADOS abaixo. Você TEM acesso a eles.
-- PROIBIDO dizer que não tem acesso, que está pesquisando, ou que é um modelo sem dados.
-- Use APENAS os links dessa seção. Copie título e URL exatamente.
-- Para listas: uma linha por item: "- Título — URL"
-- Se a seção estiver vazia: responda só "Não encontrei na curadoria de links."
-- PROIBIDO inventar sites ou marcas fora do contexto (ex.: TensorFlow, FreeAI, D2L).
-- PROIBIDO repetir a mesma frase ou parágrafo.`;
+Quando a pergunta for sobre LINKS DA CURADORIA:
+- Use APENAS a seção LINKS RECUPERADOS abaixo.
+- Copie título e URL exatamente; formato de lista: "- Título — URL"
+- Se não houver links no contexto: "Não encontrei na curadoria de links."
+- PROIBIDO inventar sites (TensorFlow, Udemy, Medium, etc.).
+- PROIBIDO dizer que não tem acesso à lista.`;
+
+const UTILITY_TEXT_RULES = `Quando o usuário colar TEXTO OU LISTA na mensagem (nomes, itens, bullets com *, etc.) e pedir tarefa sobre ESSE texto:
+- Trabalhe SOMENTE com o que ele enviou (mensagem atual e histórico recente se precisar).
+- NÃO invente links, sites ou itens que não estão no texto do usuário.
+- NÃO redirecione para a curadoria de links, a menos que ele peça links explicitamente.
+- Execute a tarefa pedida (ordenar, formatar, limpar, padronizar, remover duplicatas, etc.).
+- Para ORDENAR NOMES: ordem alfabética pt-BR (ignorar maiúsculas/minúsculas); inclua TODOS os nomes da mensagem do usuário, sem omitir nem fundir itens.
+- Formato da resposta: SOMENTE a lista final, um nome por linha, sem vírgulas juntando tudo, sem introdução, sem explicação, sem marcadores *.
+- Preserve acentos, underscores e grafias do usuário (ex.: joao_pedro); normalize só espaços extras.
+- Se o pedido for ambíguo, faça a interpretação mais útil e mostre o resultado direto (sem pedir desculpas genéricas).`;
+
+const GENERAL_RULES = `REGRAS GERAIS:
+- PROIBIDO repetir a mesma frase ou parágrafo.
+- Respostas diretas; evite "estou pesquisando" ou "não tenho acesso" quando os dados estão na mensagem do usuário.`;
+
+const ASSISTANT_INTRO =
+  "Você é um assistente da demo WebLLM, em português do Brasil.";
+
+function systemRulesForMode(retrievalMode) {
+  if (retrievalMode === "utility-text") {
+    return `${ASSISTANT_INTRO}\n\n${UTILITY_TEXT_RULES}\n\n${GENERAL_RULES}`;
+  }
+  return `${ASSISTANT_INTRO}\n\n${LINKS_RULES}\n\n${GENERAL_RULES}`;
+}
+
+/** Texto colado pelo usuário (ordenar nomes, etc.) — não misturar com busca de links. */
+function isUtilityTextTask(query) {
+  const norm = normalize(query).replace(/\s+/g, " ");
+  if (!norm) return false;
+
+  const linkIntent =
+    /\b(links?|curadoria|marcelocabral|apis?\s+gratuit|tier\s+gratuit|liste\s+(apis?|cursos?|llm|scraping|crawlers?|hospedagem))\b/.test(
+      norm
+    );
+  const utilityVerb =
+    /\b(ordene|ordenar|organize|organizar|classifique|classificar|formate|formatar|padronize|padronizar|separe|separar|limpe|limpar|corrija|corrigir|remova|remover|ordem\s+alfab|alfabeticamente|sort)\b/.test(
+      norm
+    );
+  const aboutUserList =
+    /\b(esta|essa|a)\s+lista\b/.test(norm) &&
+    /\b(nomes?|itens?|linhas?|texto|lista|entradas?)\b/.test(norm);
+  const pastedListMarkers =
+    (query.match(/\*/g) || []).length >= 2 ||
+    (query.match(/,/g) || []).length >= 4 ||
+    /^\s*[\*\-•]/m.test(query);
+
+  if (utilityVerb || (aboutUserList && pastedListMarkers)) return true;
+  if (linkIntent) return false;
+  return false;
+}
 
 export function buildSystemPrompt(results, meta = {}) {
+  const rules = systemRulesForMode(meta.retrievalMode);
+
+  if (meta.retrievalMode === "utility-text") {
+    return `${rules}
+
+MODO ATUAL: TAREFA SOBRE TEXTO DO USUÁRIO (não é busca de links).
+Leia a última mensagem do usuário no histórico (itens separados por * ou quebras de linha).
+Responda APENAS com o resultado da tarefa — sem prefácio, sem "aqui está", sem links da curadoria.
+Exemplo de formato para ordenar nomes (não copie estes nomes; use os do usuário):
+AMANDA COSTA
+felipe nunes
+Maria das Graças`;
+  }
   const isCategoryList = meta.retrievalMode?.startsWith("category-list");
   const isGreeting = meta.retrievalMode === "greeting";
   const categories = meta.categories || [];
@@ -490,7 +557,7 @@ export function buildSystemPrompt(results, meta = {}) {
       meta.category === "Deploy & Hosting"
         ? '\n"Hospedagem" = categoria Deploy & Hosting.\n'
         : "";
-    return `${SYSTEM_RULES}${topicNote}
+    return `${rules}${topicNote}
 TAREFA: listar ${results.length} link(s) — ${meta.category}${meta.filter === "free" ? " (tier gratuito)" : ""}.
 Uma frase curta de introdução, depois copie TODAS as linhas (título e URL exatos):
 
@@ -498,7 +565,7 @@ ${listLines.join("\n")}`;
   }
 
   if (isGreeting && categories.length > 0) {
-    return `${SYSTEM_RULES}
+    return `${rules}
 TAREFA: o usuário disse olá. Responda em NO MÁXIMO 4 frases curtas.
 Você é o assistente da curadoria marcelocabral.com.br/links.
 NÃO cite URLs nesta saudação. NÃO invente plataformas.
@@ -518,11 +585,9 @@ Responda em até 6 frases. Dê 4 exemplos de pergunta. Não invente URLs.\n`
         ? `\nHá ${results.length} link(s) no contexto. Use-os na resposta; não invente sites.\n`
         : "";
 
-  return `${SYSTEM_RULES}${listHint}
+  return `${rules}${listHint}
 
 --- LINKS RECUPERADOS (contexto RAG) ---
 ${context}
 --- FIM DO CONTEXTO ---`;
 }
-
-export { SYSTEM_RULES };

@@ -329,6 +329,7 @@ function trimReplyAtLoop(text) {
 function maxTokensForMode(retrievalMode) {
   if (retrievalMode === "greeting") return 160;
   if (retrievalMode === "catalog-help") return 280;
+  if (retrievalMode === "utility-text") return 1024;
   if (retrievalMode?.startsWith("category-list")) return 384;
   return 512;
 }
@@ -683,7 +684,7 @@ async function loadKnowledgeBase() {
 
 function getFilteredCatalog() {
   if (els.filterQ4f32Only?.checked) {
-    return modelCatalog.filter((m) => !m.needsF16);
+    return modelCatalog.filter((m) => m.quant === "q4f32");
   }
   return modelCatalog;
 }
@@ -838,7 +839,10 @@ async function runChatCompletion({ messages, assistantEl, turn, t0 }) {
   const mode = turn.meta?.retrievalMode;
   const request = {
     messages,
-    temperature: mode === "greeting" || mode?.startsWith("category-list") ? 0.15 : 0.2,
+    temperature:
+      mode === "greeting" || mode?.startsWith("category-list") || mode === "utility-text"
+        ? 0.15
+        : 0.2,
     max_tokens: maxTokensForMode(mode),
     stream: true,
     stream_options: { include_usage: true },

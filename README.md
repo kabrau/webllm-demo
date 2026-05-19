@@ -39,11 +39,15 @@ Aguarde o overlay de carregamento terminar antes de usar o chat.
 | `app.js` | Orquestração, chat, inspetor, histórico de turnos |
 | `worker.js` | Web Worker com handler WebLLM |
 | `retrieve.js` | Busca RAG por palavras-chave |
+| `models.js` | Catálogo e metadados dos modelos WebLLM |
 | `data/links-kb.json` | 46 links da curadoria |
+| [`modelos.md`](modelos.md) | Origem, formato MLC e como usar outros modelos |
 
 ## Modelo
 
 Use o seletor **Modelo WebLLM** no topo da página — lista completa do [WebLLM prebuiltAppConfig](https://github.com/mlc-ai/web-llm/blob/main/src/config.ts), agrupada por família, com descrição abaixo do select.
+
+Para publicação no GitHub e estudo da arquitetura, veja **[modelos.md](modelos.md)** (catálogo WebLLM, pacote MLC, quantizações, modelos customizados e limitações).
 
 - Padrão: `Qwen2.5-0.5B-Instruct-q4f32_1-MLC`
 - Checkbox **“Mostrar só q4f32”** (ligado por padrão): oculta modelos `q4f16` que falham no Windows sem shader-f16

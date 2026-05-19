@@ -143,6 +143,7 @@ function inferContext(modelId) {
 }
 
 function inferRole(modelId) {
+  if (/embed/i.test(modelId)) return "Embedding (não é chat)";
   if (/Coder|code/i.test(modelId)) return "Código";
   if (/Math/i.test(modelId)) return "Matemática";
   if (/vision/i.test(modelId)) return "Multimodal (visão)";
@@ -175,6 +176,8 @@ export function getModelMeta(modelId) {
   if (context.short) tags.push(context.short);
   if (quant.f16) tags.push("⚠ f16");
 
+  const optionTags = [role, ...tags];
+
   return {
     id: modelId,
     family,
@@ -193,7 +196,7 @@ export function getModelMeta(modelId) {
     context: context.label,
     contextShort: context.short,
     role,
-    optionLabel: `${shortDisplayName(modelId)} — ${tags.join(" · ")}`,
+    optionLabel: `${shortDisplayName(modelId)} — ${optionTags.join(" · ")}`,
   };
 }
 
@@ -217,6 +220,22 @@ export function formatModelOptionLabel(modelId) {
   return getModelMeta(modelId).optionLabel;
 }
 
+/** Modelos de embedding / vetorização — não servem para chat no seletor da demo. */
+function isEmbeddingModelRecord(rec, modelId) {
+  const type = rec?.model_type;
+  if (type != null && /embed/i.test(String(type))) return true;
+  return /embed|e5-|bge-|gte-|nomic-embed/i.test(modelId);
+}
+
+/** Só modelos adequados para conversa (instruct/chat), não embed nem base puro. */
+function isChatModelForDemo(rec) {
+  const id = rec.model_id;
+  if (!id) return false;
+  if (isEmbeddingModelRecord(rec, id)) return false;
+  if (/\bbase\b/i.test(id) && !/instruct|chat|it|zephyr/i.test(id)) return false;
+  return true;
+}
+
 export function getModelCatalog() {
   const seen = new Set();
   const list = [];
@@ -224,11 +243,13 @@ export function getModelCatalog() {
   for (const rec of prebuiltAppConfig.model_list) {
     const id = rec.model_id;
     if (!id || seen.has(id)) continue;
+    if (!isChatModelForDemo(rec)) continue;
     seen.add(id);
     const meta = getModelMeta(id);
     list.push({
       id,
       family: meta.family,
+      role: meta.role,
       description: describeModel(id),
       optionLabel: meta.optionLabel,
       quant: meta.quant,
