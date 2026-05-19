@@ -1,6 +1,16 @@
 # WebLLM Demo — Links Úteis
 
-Site de demonstração didática: inferência de LLM **no navegador** com [WebLLM](https://github.com/mlc-ai/web-llm), RAG simples sobre a curadoria [marcelocabral.com.br/links](https://marcelocabral.com.br/links) e painel inspetor para ver prompts e respostas.
+Site de demonstração didática: inferência de LLM **no navegador** com [WebLLM](https://github.com/mlc-ai/web-llm), RAG simples sobre a curadoria [Links Úteis](https://marcelocabral.com.br/links) e painel inspetor para ver prompts e respostas.
+
+**Autor:** [Marcelo Cabral](https://marcelocabral.com.br/) — curadoria e base de conhecimento em [marcelocabral.com.br/links](https://marcelocabral.com.br/links).
+
+**Explicação completa do código** (arquitetura, download do modelo, RAG, roteiro de vídeo): **[explanation.md](explanation.md)**.
+
+## Demo online
+
+Versão publicada (sem instalar nada além do browser): **[https://webllm.mcg.dev.br/](https://webllm.mcg.dev.br/)**
+
+Na primeira visita o modelo é baixado no navegador (pode demorar); use Chrome ou Edge com WebGPU.
 
 ## Requisitos
 
@@ -20,6 +30,8 @@ Abra: **http://localhost:8080**
 Aguarde o overlay de carregamento terminar antes de usar o chat.
 
 ## Roteiro da aula (5–8 min)
+
+Resumo; versão expandida com diagramas e falas sugeridas em **[explanation.md](explanation.md#roteiro-sugerido-para-vídeo-58-min)**.
 
 1. Abrir o site → mostrar overlay de loading, barra de progresso e log de etapas.
 2. Quando o status ficar **Pronto**, explicar as 3 colunas: Como funciona | Chat | Inspetor.
@@ -41,13 +53,15 @@ Aguarde o overlay de carregamento terminar antes de usar o chat.
 | `retrieve.js` | Busca RAG por palavras-chave |
 | `models.js` | Catálogo e metadados dos modelos WebLLM |
 | `data/links-kb.json` | 46 links da curadoria |
+| `metrics.js` | RAM, GPU e tokens/s na barra do topo |
+| [`explanation.md`](explanation.md) | Arquitetura, RAG, download do modelo, roteiro de vídeo |
 | [`modelos.md`](modelos.md) | Origem, formato MLC e como usar outros modelos |
 
 ## Modelo
 
 Use o seletor **Modelo WebLLM** no topo da página — lista completa do [WebLLM prebuiltAppConfig](https://github.com/mlc-ai/web-llm/blob/main/src/config.ts), agrupada por família, com descrição abaixo do select.
 
-Para publicação no GitHub e estudo da arquitetura, veja **[modelos.md](modelos.md)** (catálogo WebLLM, pacote MLC, quantizações, modelos customizados e limitações).
+Para arquitetura geral e RAG, veja **[explanation.md](explanation.md)**. Para modelos (catálogo, MLC, quantização, custom), veja **[modelos.md](modelos.md)**.
 
 - Padrão: `Qwen2.5-0.5B-Instruct-q4f32_1-MLC`
 - Checkbox **“Mostrar só q4f32”** (ligado por padrão): oculta modelos `q4f16` que falham no Windows sem shader-f16
@@ -115,4 +129,4 @@ Valores exatos de VRAM/RAM do processo exigiriam ferramentas do SO (Gerenciador 
 
 ## Licença dos dados
 
-Links curados por Marcelo Cabral. WebLLM: Apache-2.0.
+Links curados por [Marcelo Cabral](https://marcelocabral.com.br/) ([Links Úteis](https://marcelocabral.com.br/links)). WebLLM: Apache-2.0.

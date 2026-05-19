@@ -2,6 +2,8 @@
 
 Este documento explica **de onde vêm os modelos** usados no [llm-navegador](README.md), **qual o formato**, e **o que é possível (ou não) usar** além do catálogo padrão do WebLLM.
 
+Para a visão geral do app (RAG, arquivos, fluxo de pergunta, inspetor, roteiro de vídeo), veja **[explanation.md](explanation.md)**.
+
 ---
 
 ## Resumo
@@ -149,6 +151,7 @@ Avisos por modelo aparecem no log de carregamento (`getModelLoadWarnings` em [`m
 
 ## Referências
 
+- [explanation.md](explanation.md) — arquitetura, RAG e mapa de arquivos desta demo
 - [WebLLM (GitHub)](https://github.com/mlc-ai/web-llm)
 - [Config `prebuiltAppConfig`](https://github.com/mlc-ai/web-llm/blob/main/src/config.ts)
 - [MLC LLM](https://mlc.ai/mlc-llm)
