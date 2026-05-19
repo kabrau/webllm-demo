@@ -118,6 +118,26 @@ Modelos maiores (1.5B, 2B, 7B) melhoram a qualidade do texto, mas exigem mais **
 
 ---
 
+## Modelos maiores e erro ao trocar no seletor
+
+A [documentação do WebLLM](https://webllm.mlc.ai/docs/user/basic_usage.html) e issues no GitHub (ex.: [#517](https://github.com/mlc-ai/web-llm/issues/517), [#647](https://github.com/mlc-ai/web-llm/issues/647)) explicam o padrão:
+
+| Mensagem típica | Causa provável |
+|-----------------|----------------|
+| `Device was lost during reload` | **VRAM insuficiente** ao carregar o novo modelo (o anterior ainda ocupa a GPU) |
+| `DXGI_ERROR_DEVICE_REMOVED` (Windows) | Driver/GPU resetou após sobrecarga |
+
+**O que o WebLLM recomenda na prática:**
+
+1. **Menos VRAM:** modelos menores, sufixo **`-1k`** (contexto/KV menor), ou quantização **q4f16** se o browser tiver shader-f16 ([webgpureport.org](https://webgpureport.org/)).
+2. **Ordem de grandeza (q4f32, contexto padrão):** ~1–2 GB para 1B, ~3–5 GB para 3B, **~5–8 GB para 7–8B** — varia com GPU e abas abertas.
+3. **Trocar modelo:** `reload()` já chama `unload()` internamente, mas no Windows a VRAM pode não liberar a tempo; a demo **encerra o worker**, chama `unload()` e espera ~600 ms antes de criar um engine novo.
+4. **Se falhar:** F5 na página, feche Discord/jogos/outras abas com IA e volte por **Qwen2.5-0.5B** ou **1.5B**.
+
+Avisos por modelo aparecem no log de carregamento (`getModelLoadWarnings` em [`models.js`](models.js)).
+
+---
+
 ## Limitações importantes
 
 1. **Catálogo ≠ todos os modelos do mundo** — só o que a equipe MLC/WebLLM pré-compilou e listou.

@@ -276,4 +276,47 @@ export function getDefaultModelId() {
   return catalog.find((m) => !m.needsF16)?.id ?? catalog[0]?.id;
 }
 
+/** Modelos que costumam exigir mais VRAM ao carregar no WebGPU. */
+export function isHeavyModel(modelId) {
+  const m = getModelMeta(modelId);
+  return (
+    m.weightClass === "Pesado" ||
+    m.weightClass === "Muito pesado" ||
+    m.paramsB >= 3.5
+  );
+}
+
+/**
+ * Avisos alinhados à doc/issues do WebLLM (VRAM, -1k, troca de modelo).
+ * @returns {string[]}
+ */
+export function getModelLoadWarnings(modelId) {
+  const m = getModelMeta(modelId);
+  const warnings = [];
+
+  if (m.paramsB >= 7 || m.weightClass === "Muito pesado") {
+    warnings.push(
+      "VRAM: modelos 7B+ costumam precisar de ~6–8 GB livres no WebGPU (erro comum: Device was lost during reload)."
+    );
+  } else if (m.paramsB >= 3 || m.weightClass === "Pesado") {
+    warnings.push(
+      "VRAM: modelos 3B+ costumam precisar de ~3–5 GB livres; feche outras abas com IA/vídeo antes de carregar."
+    );
+  }
+
+  if (m.paramsB >= 3 && !/-1k|_1k/i.test(modelId)) {
+    warnings.push(
+      "Dica WebLLM: variantes com sufixo -1k usam menos cache KV (menos RAM/VRAM que o contexto padrão ~4k)."
+    );
+  }
+
+  if (m.quant === "q4f32" && m.paramsB >= 5) {
+    warnings.push(
+      "q4f32 é o mais compatível no Windows, mas usa mais VRAM que q4f16; em GPUs fracas prefira modelos Leve/Médio."
+    );
+  }
+
+  return warnings;
+}
+
 export { DEFAULT_MODEL_ID };

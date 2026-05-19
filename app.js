@@ -13,7 +13,12 @@ import {
   estimateTokens,
   usageToTokenStats,
 } from "./metrics.js";
-import { getModelCatalog, getDefaultModelId, describeModel } from "./models.js";
+import {
+  getModelCatalog,
+  getDefaultModelId,
+  describeModel,
+  getModelLoadWarnings,
+} from "./models.js";
 
 let currentModelId = getDefaultModelId();
 let modelCatalog = [];
@@ -165,18 +170,28 @@ async function probeWebGpuAdapter() {
   }
 }
 
-async function markGpuDeviceLost(err) {
-  gpuDeviceLost = true;
-  modelReady = false;
+/** Libera worker + pesos na GPU antes de carregar outro modelo (evita "Device lost during reload"). */
+async function releaseEngine() {
   await interruptGenerationQuiet();
   if (engine?.unload) {
     try {
       await engine.unload();
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.warn("engine.unload:", err);
     }
   }
   engine = null;
+  modelReady = false;
+  if (mlcWorker) {
+    mlcWorker.terminate();
+    mlcWorker = null;
+  }
+  await new Promise((r) => setTimeout(r, 600));
+}
+
+async function markGpuDeviceLost(err) {
+  gpuDeviceLost = true;
+  await releaseEngine();
   const detail = formatEngineError(err);
   appendLog(`GPU indisponível: ${detail}`);
   showGpuFatalOverlay(detail);
@@ -365,6 +380,8 @@ function finalizeAssistantTurn(assistantEl, turn, t0, reply, { stopped = false }
 
 /** @type {import('@mlc-ai/web-llm').MLCEngineInterface | null} */
 let engine = null;
+/** @type {Worker | null} */
+let mlcWorker = null;
 let modelReady = false;
 let gpuDeviceLost = false;
 let engineLoading = false;
@@ -738,6 +755,41 @@ async function loadModelCatalog() {
   populateModelSelect(currentModelId);
 }
 
+function modelLoadFailureHint(msg, modelId) {
+  const lower = msg.toLowerCase();
+  const vramIssue =
+    /device\s+lost|device was lost|insufficient memory|dxgi|gpu|webgpu|out of memory|oom/.test(
+      lower
+    );
+  if (!vramIssue) return "";
+
+  const lines = [
+    "",
+    "— Modelo grande ou troca de modelo:",
+    "O WebLLM documenta que erros ao carregar costumam ser falta de VRAM (o modelo anterior ainda ocupa a GPU).",
+    "Esta demo descarrega o modelo anterior e recria o worker antes de cada carga.",
+    ...getModelLoadWarnings(modelId).map((w) => `• ${w}`),
+    "• Se falhar de novo: F5 na página, feche outras abas com IA e comece por Qwen2.5-0.5B ou 1.5B.",
+  ];
+  return lines.join("\n");
+}
+
+async function createMlcEngine(modelId, initProgressCallback) {
+  const worker = new Worker(new URL("./worker.js", import.meta.url), {
+    type: "module",
+  });
+  try {
+    const eng = await CreateWebWorkerMLCEngine(worker, modelId, {
+      initProgressCallback,
+    });
+    mlcWorker = worker;
+    return eng;
+  } catch (err) {
+    worker.terminate();
+    throw err;
+  }
+}
+
 async function initEngine(modelId = currentModelId) {
   if (gpuDeviceLost) {
     setState("error");
@@ -776,21 +828,18 @@ async function initEngine(modelId = currentModelId) {
       throw new Error(probe.reason);
     }
 
-    appendLog("Iniciando Web Worker + WebLLM…");
-    if (!engine) {
-      engine = await CreateWebWorkerMLCEngine(
-        new Worker(new URL("./worker.js", import.meta.url), { type: "module" }),
-        modelId,
-        { initProgressCallback }
-      );
-    } else {
-      appendLog(`Recarregando modelo: ${modelId}…`);
-      appendLog("Aguarde — baixando pesos do modelo (1ª vez pode demorar vários minutos).");
-      if (typeof engine.setInitProgressCallback === "function") {
-        engine.setInitProgressCallback(initProgressCallback);
-      }
-      await engine.reload(modelId);
+    if (engine || mlcWorker) {
+      appendLog("Liberando GPU do modelo anterior…");
+      await releaseEngine();
     }
+
+    for (const w of getModelLoadWarnings(modelId)) {
+      appendLog(`Aviso: ${w}`);
+    }
+
+    appendLog(`Carregando ${modelId}…`);
+    appendLog("Aguarde — na 1ª vez o download pode levar vários minutos.");
+    engine = await createMlcEngine(modelId, initProgressCallback);
     appendLog("Modelo pronto.");
     modelReady = true;
     gpuInfo = await sampleGpu(engine);
@@ -824,7 +873,7 @@ async function initEngine(modelId = currentModelId) {
           : "";
     addMessage(
       "assistant",
-      `Falha ao carregar o modelo:\n${msg}${gpuHint}\n\nConfira também sua conexão (download do modelo na 1ª vez).`
+      `Falha ao carregar o modelo:\n${msg}${gpuHint}${modelLoadFailureHint(msg, modelId)}\n\nConfira também sua conexão (download do modelo na 1ª vez).`
     );
     els.loadingOverlay.hidden = false;
     els.progressText.textContent = "Falhou";
@@ -1043,8 +1092,19 @@ async function onModelChange() {
     return;
   }
 
+  if (generationInFlight) {
+    stopRequested = true;
+    await interruptGenerationQuiet();
+    generationInFlight = false;
+    stopRequested = false;
+  }
+
   els.modelSelect.disabled = true;
   chatHistory.length = 0;
+  turnLog.length = 0;
+  selectedTurnIndex = -1;
+  refreshTurnSelect();
+  updateInspectorForTurn(null);
   els.messages.innerHTML = "";
   try {
     await initEngine(nextId);
